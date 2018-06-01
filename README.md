@@ -1,6 +1,5 @@
 # CooJudge
-Hướng dẫn dùng Coo Judging
-H
+Hướng dẫn dùng CooJudge
 
 ví dụ ta có các bài cần chấm là A.cpp B.cpp và có bộ test
 bộ test được định dạng như sau
