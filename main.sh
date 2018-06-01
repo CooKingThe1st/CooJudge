@@ -18,7 +18,7 @@ else
 	mkdir Result
 fi
 
-echo -e "${cyan}${bold}Welcome to Coo Judging ${normal}" |pv -qL20
+echo -e "${cyan}${bold}Welcome to Coo Judging ${normal}" |pv -qL10
 foo=0
 while [ $foo -lt 1 ]; do
 
