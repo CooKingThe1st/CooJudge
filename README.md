@@ -1,6 +1,5 @@
 # CooJudge
-Hướng dẫn dùng Coo Judging
-H
+Hướng dẫn dùng CooJudge
 
 ví dụ ta có các bài cần chấm là A.cpp B.cpp và có bộ test
 bộ test được định dạng như sau
@@ -8,13 +7,13 @@ A/testxx/A.inp và A/testxx/A.out
 (nôm na là trong folder tên A, có 1 đống các file test như là  test01 test02, trong test01 có A.inp và A.out)
 
 một số lưu ý trước khi chấm bài
-1. tất cả đều là standard input và standard output ( mình 0 rảnh làm file )
+1. tất cả đều là standard input và standard output
 2. phải cài pv trước ( sudo apt install pv)
 3. phải có endline ở cuối bài
 4. TBA
 
 Setup
-tạo thư mục mới là abcd(tên 0 quan trọng)
+tạo thư mục mới để chấm bài
 trong abcd, tạo các thư mục Submit và Test ( đúng y chang thế này )
 bỏ A.cpp B.cpp vào thư mục Submit
 bỏ folder A, B vào Test

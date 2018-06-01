@@ -18,7 +18,8 @@ else
 	mkdir Result
 fi
 
-echo -e "${cyan}${bold}Welcome to Coo Judging ${normal}" |pv -qL20
+echo -e "${cyan}${bold}Welcome to Coo Judging ${normal}"
+sleep 0.300
 foo=0
 while [ $foo -lt 1 ]; do
 
@@ -28,6 +29,17 @@ while [ $foo -lt 1 ]; do
 	else
 		 mkdir tmp
 	fi
+	
+	totalScore=0
+	totalTest=0
+	printf "\t${red}${bold}Set All Time Limit to 1 ? [y/N] ${normal}"
+	superJudge=0
+	read motherfuckyou
+	if [[ "$motherfuckyou" =~ ^([yY][eE][sS]|[yY])+$ ]] ;
+        then
+            superJudge=1
+        fi
+	printf "\n"
 	for f in Submit/*.cpp ; do
 		filename=$(basename -- $f)
 		name="${filename%.*}"
@@ -54,7 +66,14 @@ while [ $foo -lt 1 ]; do
 		if [ -e  "Test/$name" ] ; then
 			echo -e "\t ${green}${bold}OK!${normal}${plain} Start Judging $cname"
 		
-			./judge.sh "tmp/$name" "Test/$name"
+			./judge.sh "tmp/$name" "Test/$name" $superJudge
+			{
+				xfoo="$(< xfoo.splog)"
+				xbar="$(< xbar.splog)"
+				let totalScore=totalScore+xfoo
+				let totalTest=totalTest+xbar
+			} &> /dev/null
+			rm *.splog
 			echo -e "\t ${cyan}${bold}Done${normal} Judging $cname"	
 		else
 			echo -e "\t ${red}${bold}Error!${plain}${normal} Missing Test for Problem $cname"
@@ -62,9 +81,16 @@ while [ $foo -lt 1 ]; do
 		fi
 		printf "\n"
 	done
+	if [ $totalScore = $totalTest ]; then
+		echo -e "\t     \e[48;5;27m\e[38;5;234m${bold}(っ◔◡◔)っ \e[38;5;196m♥ \e[38;5;121mꓚooPletꓱ \e[38;5;196m♥ ${normal}" |pv -qL 15 
+			spd-say -r -50 -p -55 -i -65 -t female2 "cupleted"
+	else
+		spd-say -r -50 -p -55 -i -65 -t female3 -l UG "Try Again"
+	fi
+	echo -e "\t ${blue}${bold}Score ${cyan}${bold}$totalScore AC ${red}${bold}in ${purple}${bold}$totalTest Tests${normal}"
 	rm -r tmp
-	printf "${blue}${bold}Continue Judging ? [y/N] ${normal}" 
-	read -r response
+	printf "${blue}${bold}Continue Judging ? [y/N] ${normal}"
+	read response
 	if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]] ;
 	then
 	    :

@@ -29,9 +29,13 @@ tlepoint=0
 
 ps="${red}+"
 ms="${blue}-"
-printf "\t ${bold}$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps${plain}\n\t "
-printf "${red}${bold}set time limit${normal} "
-read tlmit
+if [ $3 -eq 0 ]; then
+	printf "\t ${red}${bold}set time limit${normal} "
+	read tlmit
+else
+	tlmit=1
+fi
+printf "\t ${bold}$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps${plain}\t "
 # printf "\t ${bold}${purple}αβγδεζηθικλμνξοπρςτυφχψω${plain}\n\t"
 
 touch AClog.splog
@@ -66,15 +70,6 @@ do
 		fi
 		continue
 	fi
-	# if [ $? == 139 ] ; then
-	# 	printf "${purple}${bold} ® ${plain}${normal}"
-	# 	echo "$testname RE" >> $log
-	# 	continue
-	# fi
-	# > tmp.out 2> /dev/null
-	# cat $? > tmp.out
-	# xxd $out
-	# xxd tmp.out
 	
 	if diff -Z $out tmp.out &> /dev/null; then
 		printf "${green}${bold} ✔ ${plain}${normal}"
@@ -104,4 +99,7 @@ cat WAlog.splog >> $log
 echo "$point test AC " >> $log
 cat AClog.splog >> $log
 rm *.splog
-# xu ly re
+
+echo $point > "xfoo.splog"
+echo $numtest > "xbar.splog"
+
