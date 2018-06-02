@@ -27,3 +27,10 @@ chỉ việc nhập time limit khi máy hỏi là xong
 
 Kết quả
 trình chấm sẽ tạo folder Result chứa kết quả chấm cho từng bài
+
+Từ beta 1.0.9
+ Sẽ có thông báo cho các lệnh exitcode
+ Để biết exitcode thể hiện cái gì, lấy x = exitcode - 130, rồi soi vào đây:
+ http://man7.org/linux/man-pages/man7/signal.7.html
+ VD: exitcode 139, thì sẽ là lỗi số 11, tức là SIGSEGV, hay ta còn gọi là segmentaion fault.
+ 
