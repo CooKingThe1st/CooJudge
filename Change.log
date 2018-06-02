@@ -1,4 +1,15 @@
-Adding new features in beta 1.0.7
+Beta 1.0.8
+
+Fix error
+ 1. No longer prompt error when getting a RE
+Adding features
+ 1. Hide .splog file, make CooJudge more elegant
+Minor changes
+ 1. Change color of TLE and RE
+------------------------------------------------------
+Beta 1.0.7
+
+Adding new features
  1. Can set time limit of all problems to 1
  2. Accumulate total score 
  3. Will emit "CooPletEd" if user accepts all problems.
