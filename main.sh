@@ -1,7 +1,7 @@
 #!/bin/bash
 chmod +x judge.sh
 
-bold=$(tput bold)
+bold='\e[1m'
 normal=$(tput sgr0)
 
 cyan='\033[0;36m'
@@ -88,7 +88,7 @@ while [ $foo -lt 1 ]; do
 		:
 	#	spd-say -r -50 -p -55 -i -65 -t female2 -l UG ""
 	fi
-	echo -e "\t${cyan}${bold}$totalScore AC ${red}${bold}in ${purple}${bold}$totalTest Tests${normal}"
+	echo -e "\t${cyan}\e[1m\e[4m$totalScore AC\e[38;5;9m in \e[38;5;57m$totalTest Tests${normal}"
 	rm -r .tmp
 	printf "${blue}${bold}Continue Judging ? [y/N] ${normal}"
 	read response

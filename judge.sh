@@ -42,6 +42,7 @@ touch ".AClog.splog"
 touch ".WAlog.splog"
 touch ".RElog.splog"
 touch ".TLElog.splog"
+touch ".REinfo.splog"
 # 
 for xtest in $testFile/*/;
 do
@@ -56,16 +57,19 @@ do
 	if [ -e ".tmp.out" ] ; then
 		> ".tmp.out"
 	fi
-	if timeout --foreground $tlmit $exeFile < $inp > ".tmp.out" ; then
+	if timeout --preserve-status --foreground $tlmit $exeFile < $inp > ".tmp.out"; then
 		:
 	else 
-		if [ $? == 124 ] ; then
+		xcode=$?
+		if [ $xcode == 143 ] ; then
 			printf "\e[38;5;130m${bold} † ${plain}${normal}"
 			echo " $testname " >> ".TLElog.splog"
 			let tlepoint++
 		else
 			printf "\e[38;5;195m${bold} ø ${plain}${normal}"
 			echo " $testname " >> ".RElog.splog"
+			printf " $testname\n " >> ".REinfo.splog"
+			printf " exit code $xcode \n" >> ".REinfo.splog"
 			let repoint++
 		fi
 		continue
@@ -98,6 +102,12 @@ echo "$wapoint test WA " >> $log
 cat ".WAlog.splog" >> $log
 echo "$point test AC " >> $log
 cat ".AClog.splog" >> $log
+
+if [ $repoint -gt 0 ] ; then
+	echo -e "\n" >> $log
+	echo "RE info" >> $log
+	cat ".REinfo.splog" >> $log
+fi
 
 echo $point > ".xfoo.splog"
 echo $numtest > ".xbar.splog"
