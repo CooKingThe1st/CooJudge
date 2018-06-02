@@ -1,9 +1,15 @@
+Beta 1.0.99
+Adding features
+ 1. Adding exit code for RE at the end of result.log
+Minor changes
+ 1. Adding sound when user accept all problem 
+-----------------------------------------------------
 Beta 1.0.8
 
 Fix error
  1. No longer prompt error when getting a RE
 Adding features
- 1. Hide .splog file, make CooJudge more elegant
+ 1. Hide .splog file, make CooJudge looks more elegant
 Minor changes
  1. Change color of TLE and RE
 ------------------------------------------------------
