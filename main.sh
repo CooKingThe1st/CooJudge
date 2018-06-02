@@ -24,10 +24,10 @@ foo=0
 while [ $foo -lt 1 ]; do
 
 	printf "\n" 
-	if [ -e tmp ] ; then 
+	if [ -e .tmp ] ; then 
 		:
 	else
-		 mkdir tmp
+		 mkdir .tmp
 	fi
 	
 	totalScore=0
@@ -54,7 +54,7 @@ while [ $foo -lt 1 ]; do
 			touch $log
 		fi
 
-		if g++ -std=c++11 -O2 $f -o "tmp/$name" &> $log ; then
+		if g++ -std=c++11 -O2 $f -o ".tmp/$name" &> $log ; then
 			:
 		else
 			echo -e "\t \e[38;5;199m${bold}Compile Error !!!${normal}${plain}"
@@ -66,14 +66,14 @@ while [ $foo -lt 1 ]; do
 		if [ -e  "Test/$name" ] ; then
 			echo -e "\t ${green}${bold}OK!${normal}${plain} Start Judging $cname"
 		
-			./judge.sh "tmp/$name" "Test/$name" $superJudge
+			./judge.sh ".tmp/$name" "Test/$name" $superJudge 2> /dev/null
 			{
-				xfoo="$(< xfoo.splog)"
-				xbar="$(< xbar.splog)"
+				xfoo="$(< .xfoo.splog)"
+				xbar="$(< .xbar.splog)"
 				let totalScore=totalScore+xfoo
 				let totalTest=totalTest+xbar
 			} &> /dev/null
-			rm *.splog
+			find -path './.*.splog' -delete
 			echo -e "\t ${cyan}${bold}Done${normal} Judging $cname"	
 		else
 			echo -e "\t ${red}${bold}Error!${plain}${normal} Missing Test for Problem $cname"
@@ -82,13 +82,14 @@ while [ $foo -lt 1 ]; do
 		printf "\n"
 	done
 	if [ $totalScore = $totalTest ]; then
-		echo -e "\t     \e[48;5;27m\e[38;5;234m${bold}(っ◔◡◔)っ \e[38;5;196m♥ \e[38;5;121mꓚooPletꓱ \e[38;5;196m♥ ${normal}" |pv -qL 15 
+		echo -e "\t     \e[48;5;27m\e[38;5;234m${bold}(っ◔◡◔)っ \e[38;5;196m♥ \e[38;5;121mꓚooPletꓱ \e[38;5;196m♥ ${normal}" |pv -qL 20 
 			spd-say -r -50 -p -55 -i -65 -t female2 "cupleted"
 	else
-		spd-say -r -50 -p -55 -i -65 -t female3 -l UG "Try Again"
+		:
+	#	spd-say -r -50 -p -55 -i -65 -t female2 -l UG ""
 	fi
-	echo -e "\t ${blue}${bold}Score ${cyan}${bold}$totalScore AC ${red}${bold}in ${purple}${bold}$totalTest Tests${normal}"
-	rm -r tmp
+	echo -e "\t${cyan}${bold}$totalScore AC ${red}${bold}in ${purple}${bold}$totalTest Tests${normal}"
+	rm -r .tmp
 	printf "${blue}${bold}Continue Judging ? [y/N] ${normal}"
 	read response
 	if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]] ;
