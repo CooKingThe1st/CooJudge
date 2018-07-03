@@ -1,5 +1,6 @@
 #!/bin/bash
 chmod +x judge.sh
+ulimit -s unlimited
 
 bold='\e[1m'
 normal=$(tput sgr0)
