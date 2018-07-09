@@ -11,6 +11,7 @@ một số lưu ý trước khi chấm bài
 2. phải cài pv trước ( sudo apt install pv)
 3. phải có endline ở cuối bài
 4. tên file submit, tên file test, tên từng test phải giống nhau ( case sensitve )
+ ( nếu tên file từng test khác với tên mà bạn muốn, có thể viết 1 code bash đơn giản kiểu for từng test v
 
 Setup
 tạo thư mục mới để chấm bài
