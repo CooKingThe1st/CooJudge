@@ -10,7 +10,7 @@ một số lưu ý trước khi chấm bài
 1. tất cả đều là standard input và standard output
 2. phải cài pv trước ( sudo apt install pv)
 3. phải có endline ở cuối bài
-4. TBA
+4. tên file submit, tên file test, tên từng test phải giống nhau ( case sensitve )
 
 Setup
 tạo thư mục mới để chấm bài
@@ -34,3 +34,19 @@ Từ beta 1.0.9
  http://man7.org/linux/man-pages/man7/signal.7.html
  VD: exitcode 139, thì sẽ là lỗi số 11, tức là SIGSEGV, hay ta còn gọi là segmentaion fault.
  
+ Một số exit code hay gặp:
+ 3  : stack memory exceed  
+ 128: timeout
+ 134: assert failed
+ 139: segment fault
+ 
+Screenshot:
+0. thư mục nơi ta sẽ chấm bài:
+ https://imgur.com/a/S0noplu
+ chỉ cần quan tâm 2 thư mục Submit và Test
+1. thư mục nạp bài: Submit
+ https://imgur.com/a/I2IcW3e
+2. thư mục chứa test: Test
+ https://imgur.com/a/MoJs9UJ
+3. chạy trình chấm:
+ https://imgur.com/a/Dj6XQxI
