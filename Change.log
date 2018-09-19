@@ -1,21 +1,26 @@
-Beta 1.0.99
-Adding features
- 1. Adding exit code for RE at the end of result.log
+Beta 1.1.0
+Adding Features
+1. CustomJudge  
+ provide user checker to judge
 Minor changes
- 1. Adding sound when user accept all problem 
+1. provide bigger coverage for input and output
+-----------------------------------------------------
+Beta 1.0.9
+Adding features  
+1. Adding exit code for RE at the end of result.log
+Minor changes  
+1. Adding sound when user accept all problem 
 -----------------------------------------------------
 Beta 1.0.8
-
-Fix error
- 1. No longer prompt error when getting a RE
-Adding features
- 1. Hide .splog file, make CooJudge looks more elegant
-Minor changes
- 1. Change color of TLE and RE
+Adding features  
+1. Hide .splog file, make CooJudge looks more elegant
+Fix error  
+2. No longer prompt error when getting a RE
+Minor changes  
+3. Change color of TLE and RE
 ------------------------------------------------------
 Beta 1.0.7
-
-Adding new features
- 1. Can set time limit of all problems to 1
- 2. Accumulate total score 
- 3. Will emit "CooPletEd" if user accepts all problems.
+Adding new features  
+1. Can set time limit of all problems to 1
+2. Accumulate total score 
+3. Will emit "CooPletEd" if user accepts all problems.
