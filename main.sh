@@ -1,5 +1,6 @@
 #!/bin/bash
 chmod +x judge.sh
+chmod +x judge_checker.sh
 
 bold='\e[1m'
 normal=$(tput sgr0)
@@ -32,10 +33,12 @@ while [ $foo -lt 1 ]; do
 	
 	totalScore=0
 	totalTest=0
+	totalproblem=0
+	totalACproblem=0
 	printf "\t${red}${bold}Set All Time Limit to 1 ? [y/N] ${normal}"
 	superJudge=0
-	read motherfuckyou
-	if [[ "$motherfuckyou" =~ ^([yY][eE][sS]|[yY])+$ ]] ;
+	read checkContinuos
+	if [[ "$checkContinuos" =~ ^([yY][eE][sS]|[yY])+$ ]] ;
         then
             superJudge=1
         fi
@@ -46,6 +49,7 @@ while [ $foo -lt 1 ]; do
 		cname="${purple}"$name
 		cname=$cname"${plain}"
 		echo -e "\t${bold}Problem ${normal}: $cname"
+		let totalproblem=totalproblem+1
 
 		log="result_$name.log"
 		if [ -e $log ] ; then
@@ -65,13 +69,21 @@ while [ $foo -lt 1 ]; do
 
 		if [ -e  "Test/$name" ] ; then
 			echo -e "\t ${green}${bold}OK!${normal}${plain} Start Judging $cname"
-		
-			./judge.sh ".tmp/$name" "Test/$name" $superJudge 2> /dev/null
+			flag_checker=0
+			if [ -e "Test/$name/checker" ] ; then
+				./judge_checker.sh ".tmp/$name" "Test/$name" $superJudge #2> /dev/null
+				flag_checker=1
+			else 
+				./judge.sh ".tmp/$name" "Test/$name" $superJudge #2> /dev/null
+			fi
 			{
-				xfoo="$(< .xfoo.splog)"
-				xbar="$(< .xbar.splog)"
-				let totalScore=totalScore+xfoo
-				let totalTest=totalTest+xbar
+				numAC="$(< .numAC.splog)"
+				numAll="$(< .numAll.splog)"
+				let totalScore=totalScore+numAC
+				let totalTest=totalTest+numAll
+				if [ $numAll -eq $numAC ] && [ $flag_checker -eq 0 ] ; then
+					let totalACproblem=totalACproblem+1
+				fi
 			} &> /dev/null
 			find -path './.*.splog' -delete
 			echo -e "\t ${cyan}${bold}Done${normal} Judging $cname"	
@@ -81,14 +93,14 @@ while [ $foo -lt 1 ]; do
 		fi
 		printf "\n"
 	done
-	if [ $totalScore = $totalTest ]; then
-		echo -e "\t     \e[48;5;27m\e[38;5;234m${bold}(っ◔◡◔)っ \e[38;5;196m♥ \e[38;5;121mꓚooPletꓱ \e[38;5;196m♥ ${normal}" |pv -qL 20 
-			spd-say -r -50 -p -55 -i -65 -t female2 "cupleted"
+	if [ $totalACproblem = $totalproblem ] && [ $totalACproblem -gt 0 ] && [ $totalScore -gt 0 ] ; then
+		echo -e "\t     \e[48;5;27m\e[38;5;234m${bold}(っ◔◡◔)っ \e[38;5;196m♥ \e[38;5;121mꓚooPletꓱ \e[38;5;196m♥ ${normal}"
+			# spd-say -r -50 -p -55 -i -65 -t female2 "cupleted"
 	else
 		:
 	#	spd-say -r -50 -p -55 -i -65 -t female2 -l UG ""
 	fi
-	echo -e "\t${cyan}\e[1m\e[4m$totalScore AC\e[38;5;9m in \e[38;5;57m$totalTest Tests${normal}"
+	echo -e "\t${cyan}\e[1m\e[4m$totalScore score\e[38;5;9m in \e[38;5;57m$totalTest Tests${normal}"
 	rm -r .tmp
 	printf "${blue}${bold}Continue Judging ? [y/N] ${normal}"
 	read response
