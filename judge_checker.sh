@@ -1,5 +1,4 @@
 #!/bin/bash
-
 bell=$(tput bel)
 
 bold=$(tput bold)
@@ -20,11 +19,15 @@ testFile=$2
 
 orgname=$(basename $testFile)
 log="result_$orgname.log"
+ceker="$testFile/checker" #for fun
+touch ".checkerOutput.splog"
+cekOut=".checkerOutput.splog"
+# ".checkerOutput.splog"
 
 numtest=0
 point=0
 iopoint=0
-wapoint=0
+nmpoint=0
 repoint=0
 tlepoint=0
 
@@ -39,8 +42,7 @@ fi
 printf "\t ${bold}$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps${plain}\t "
 # printf "\t ${bold}${purple}αβγδεζηθικλμνξοπρςτυφχψω${plain}\n\t"
 
-touch ".AClog.splog"
-touch ".WAlog.splog"
+touch ".NMlog.splog"
 touch ".RElog.splog"
 touch ".TLElog.splog"
 touch ".IOlog.splog"
@@ -48,6 +50,7 @@ touch ".IOlog.splog"
 touch ".REinfo.splog"
 touch ".IOinfo.splog"
 # 
+
 for xtest in $testFile/*/;
 do
 	foo=$(($numtest % 10))
@@ -56,10 +59,10 @@ do
 	fi
 	testname=$(basename $xtest)
 	let numtest++
-
 	flag_notfoundI=0
 	flag_notfoundO=0
 	inp=""
+
 	if [ -e "$xtest/$orgname.inp" ]; then 
 		inp="$xtest/$orgname.inp";
 	elif [ -e "$xtest/$orgname.INP" ]; then 
@@ -72,35 +75,35 @@ do
 		flag_notfoundI=1
 	fi
 
-	out=""
+	flag_confused=0
 	if [ -e "$xtest/$orgname.out" ]; then 
-		out="$xtest/$orgname.out";
+		flag_confused=1
 	elif [ -e "$xtest/$orgname.OUT" ]; then 
-		out="$xtest/$orgname.OUT";
-	elif [ -e "$xtest/$orgname.ans" ]; then 
-		out="$xtest/$orgname.ans";
-	elif [ -e "$xtest/$orgname.ANS" ]; then 
-		out="$xtest/$orgname.ANS";
-	else
-		flag_notfoundO=1
+		flag_confused=1
 	fi
-	
-	if [ $flag_notfoundO -eq 1 ] || [ $flag_notfoundI -eq 1 ]; then
+
+	if [ $flag_confused -eq 1 ]; then
+		printf "\e[38;5;255m${bold} ¿ ${plain}${normal}"
+		echo " $testname " >> ".IOlog.splog"
+		printf " $testname contains output file " >> ".IOinfo.splog"
+		let iopoint++
+		continue
+	fi
+	temporaryOutputFile="$xtest$orgname.out"
+
+	if [ $flag_notfoundI -eq 1 ]; then
 		printf "\e[38;5;255m${bold} ? ${plain}${normal}"
 		echo " $testname " >> ".IOlog.splog"
 		printf " $testname lacks of " >> ".IOinfo.splog"
 		if [ $flag_notfoundI -eq 1 ]; then
 			printf "input " >> ".IOinfo.splog"
 		fi
-		if [ $flag_notfoundO -eq 1 ]; then
-			printf "output " >> ".IOinfo.splog"
-		fi
 		printf " file \n" >> ".IOinfo.splog"
 		let iopoint++
 		continue
 	fi
 
-	if timeout --preserve-status --foreground $tlmit $exeFile < $inp > ".tmp.out"; then
+	if timeout --preserve-status --foreground $tlmit $exeFile < $inp > "$temporaryOutputFile"; 2> /dev/null; then
 		:
 	else 
 		xcode=$?
@@ -117,29 +120,49 @@ do
 		fi
 		continue
 	fi
-	
-	if diff -Z $out ".tmp.out" &> /dev/null; then
-		printf "${green}${bold} ✔ ${plain}${normal}"
-		let point++
-		echo " $testname " >> ".AClog.splog"
-	else
-		printf "${red}${bold} ✖ ${plain}${normal}"
-		let wapoint++
-		echo " $testname " >> ".WAlog.splog"
+
+	cd $xtest
+	if timeout --preserve-status --foreground $tlmit "../checker" > "../../../$cekOut" 2> /dev/null; then
+		:
+	else 
+		xcode=$?
+		cd -
+		if [ $xcode == 143 ] ; then
+			printf "\e[38;5;130m${bold} † ${plain}${normal}"
+			echo " $testname " >> ".TLElog.splog"
+			let tlepoint++
+		else
+			printf "\e[38;5;202m${bold} ø ${plain}${normal}"
+			echo " $testname " >> ".RElog.splog"
+			printf " $testname\n " >> ".REinfo.splog"
+			printf " exit code $xcode \n" >> ".REinfo.splog"
+			let repoint++
+		fi
+		rm "$temporaryOutputFile"
+		continue
 	fi
+	cd - &> /dev/null
+	rm "$temporaryOutputFile"
+	partialScore="$(head -n 1 "$cekOut")"
+	point=`echo $point + $partialScore | bc`
+
+	printf "${yellow}${bold} ⦿ ${plain}${normal}"
+
+	let nmpoint++
+	echo " $testname " >> ".NMlog.splog"
+	sed -i '1d' "$cekOut"
+	cat "$cekOut" >> ".NMlog.splog"
+	printf " \n " >> ".NMlog.splog"
 done
-if [ -e ".tmp.out" ]; then 
-	rm ".tmp.out"
+if [ -e "$orgname.out" ]; then 
+	rm "$orgname.out"
 fi
-printf "\n \t ${green}${bold}$point AC ${normal}/ \e[38;5;191m${bold}$numtest test ${normal}\n"
-if [ $point = $numtest ] ; then
-	echo -e "\t ${blue}\e[7m~~~~~~~~~~Accepted~~~~~~~~~~ \e[27m"
-fi
+printf "\n"
 if [ $iopoint -eq $numtest ]; then
-	echo -e "\t ${yellow}\e[7mDid you forget the checker_$orgname ?\e[27m"
+	echo -e "\t ${yellow}\e[7mDid you forget the input/answer files ?\e[27m"
 fi
 printf "\t ${bold}$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps${plain}\n"
-echo "$point / $numtest which : " >> $log
+echo "$point score which : " >> $log
 
 echo "$iopoint test lacks I/O " >> $log
 cat ".IOlog.splog" >> "$log"
@@ -147,10 +170,8 @@ echo "$repoint test RE " >> $log
 cat ".RElog.splog" >> $log
 echo "$tlepoint test TLE " >> $log
 cat ".TLElog.splog" >> $log
-echo "$wapoint test WA " >> $log
-cat ".WAlog.splog" >> $log
-echo "$point test AC " >> $log
-cat ".AClog.splog" >> $log
+echo "$nmpoint test run normal with" >> $log
+cat ".NMlog.splog" >> $log
 
 if [ $repoint -gt 0 ] ; then
 	echo -e "\n" >> $log
