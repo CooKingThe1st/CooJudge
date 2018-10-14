@@ -71,10 +71,10 @@ while [ $foo -lt 1 ]; do
 			echo -e "\t ${green}${bold}OK!${normal}${plain} Start Judging $cname"
 			flag_checker=0
 			if [ -e "Test/$name/checker" ] ; then
-				./judge_checker.sh ".tmp/$name" "Test/$name" $superJudge #2> /dev/null
+				./judge_checker.sh ".tmp/$name" "Test/$name" $superJudge 2> /dev/null
 				flag_checker=1
 			else 
-				./judge.sh ".tmp/$name" "Test/$name" $superJudge #2> /dev/null
+				./judge.sh ".tmp/$name" "Test/$name" $superJudge 2> /dev/null
 			fi
 			{
 				numAC="$(< .numAC.splog)"
