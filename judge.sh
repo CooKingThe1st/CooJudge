@@ -1,5 +1,7 @@
 #!/bin/bash
 
+ulimit -s 1000000
+
 bell=$(tput bel)
 
 bold=$(tput bold)
