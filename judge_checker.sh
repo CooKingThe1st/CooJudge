@@ -19,10 +19,6 @@ testFile=$2
 
 orgname=$(basename $testFile)
 log="result_$orgname.log"
-ceker="$testFile/checker" #for fun
-touch ".checkerOutput.splog"
-cekOut=".checkerOutput.splog"
-# ".checkerOutput.splog"
 
 numtest=0
 point=0
@@ -39,6 +35,7 @@ if [ $3 -eq 0 ]; then
 else
 	tlmit=1
 fi
+
 printf "\t ${bold}$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps${plain}\t "
 # printf "\t ${bold}${purple}αβγδεζηθικλμνξοπρςτυφχψω${plain}\n\t"
 
@@ -49,20 +46,22 @@ touch ".IOlog.splog"
 
 touch ".REinfo.splog"
 touch ".IOinfo.splog"
-# 
 
-for xtest in $testFile/*/;
+for xtest in `ls -dv $testFile/*`;
 do
+	if [ ! -d ${xtest} ]; then
+		continue
+	fi	
+	
 	foo=$(($numtest % 10))
 	if [ $foo -lt 1 ] ; then
 		printf "\n \t"
 	fi
 	testname=$(basename $xtest)
 	let numtest++
-	flag_notfoundI=0
-	flag_notfoundO=0
-	inp=""
 
+	flag_notfoundI=0
+	inp=""
 	if [ -e "$xtest/$orgname.inp" ]; then 
 		inp="$xtest/$orgname.inp";
 	elif [ -e "$xtest/$orgname.INP" ]; then 
@@ -75,59 +74,73 @@ do
 		flag_notfoundI=1
 	fi
 
-	flag_confused=0
-	if [ -e "$xtest/$orgname.out" ]; then 
-		flag_confused=1
-	elif [ -e "$xtest/$orgname.OUT" ]; then 
-		flag_confused=1
-	fi
-
-	if [ $flag_confused -eq 1 ]; then
-		printf "\e[38;5;255m${bold} ¿ ${plain}${normal}"
-		echo " $testname " >> ".IOlog.splog"
-		printf " $testname contains output file " >> ".IOinfo.splog"
-		let iopoint++
-		continue
-	fi
-	temporaryOutputFile="$xtest$orgname.out"
 
 	if [ $flag_notfoundI -eq 1 ]; then
 		printf "\e[38;5;255m${bold} ? ${plain}${normal}"
 		echo " $testname " >> ".IOlog.splog"
-		printf " $testname lacks of " >> ".IOinfo.splog"
-		if [ $flag_notfoundI -eq 1 ]; then
-			printf "input " >> ".IOinfo.splog"
-		fi
-		printf " file \n" >> ".IOinfo.splog"
+		printf " $testname lacks of input file \n" >> ".IOinfo.splog"
 		let iopoint++
 		continue
 	fi
 
-	if timeout --preserve-status --foreground $tlmit $exeFile < $inp > "$temporaryOutputFile"; 2> /dev/null; then
-		:
-	else 
-		xcode=$?
-		if [ $xcode == 143 ] ; then
-			printf "\e[38;5;130m${bold} † ${plain}${normal}"
-			echo " $testname " >> ".TLElog.splog"
-			let tlepoint++
-		else
-			printf "\e[38;5;202m${bold} ø ${plain}${normal}"
-			echo " $testname " >> ".RElog.splog"
-			printf " $testname\n " >> ".REinfo.splog"
-			printf " exit code $xcode \n" >> ".REinfo.splog"
-			let repoint++
-		fi
-		continue
-	fi
+	oreFileOut="$xtest/$orgname.ore"	
 
-	cd $xtest
-	if timeout --preserve-status --foreground $tlmit "../checker" > "../../../$cekOut" 2> /dev/null; then
+	if timeout --preserve-status --foreground $tlmit $exeFile < $inp > "$oreFileOut" 2> /dev/null; then
 		:
 	else 
 		xcode=$?
-		cd -
-		if [ $xcode == 143 ] ; then
+		if [ $xcode == 143 ] ; 
+		then
+			printf "\e[38;5;130m${bold} † ${plain}${normal}"
+			echo " $testname " >> ".TLElog.splog"
+			let tlepoint++
+		else
+			printf "\e[38;5;202m${bold} ø ${plain}${normal}"
+			echo " $testname " >> ".RElog.splog"
+			printf " $testname\n exit code $xcode \n" >> ".REinfo.splog"
+			let repoint++
+		fi
+		continue
+	fi
+		
+	# begin checker
+	cd $xtest
+
+	cekLog=".checkerLog.splog"
+	touch "$cekLog"
+
+	xcode=0
+	flagSomethingWrong=0
+	
+	partialScore=0
+	checkerComment=""
+
+	if timeout --preserve-status --foreground $tlmit ../checker > "$cekLog" 2> /dev/null; then
+		:
+	else
+		xcode=$?
+		flagSomethingWrong=1
+	fi
+	
+	if [ $flagSomethingWrong -eq 0 ]; 
+	then
+		partialScore="$(head -n 1 "$cekLog")"
+		sed -i '1d' "$cekLog"
+		checkerComment="$(head -n 1 "$cekLog")"
+
+		point=`echo $point + $partialScore | bc`
+	fi
+	
+	rm $cekLog
+	cd - &> /dev/null
+	# end checker	
+
+	rm $oreFileOut
+
+	if [ $flagSomethingWrong -eq 1 ]; then
+	{
+		if [ $xcode == 143 ] ; 
+		then
 			printf "\e[38;5;130m${bold} † ${plain}${normal}"
 			echo " $testname " >> ".TLElog.splog"
 			let tlepoint++
@@ -138,39 +151,35 @@ do
 			printf " exit code $xcode \n" >> ".REinfo.splog"
 			let repoint++
 		fi
-		rm "$temporaryOutputFile"
 		continue
+	}
 	fi
-	cd - &> /dev/null
-	rm "$temporaryOutputFile"
-	partialScore="$(head -n 1 "$cekOut")"
-	point=`echo $point + $partialScore | bc`
 
 	printf "${yellow}${bold} ⦿ ${plain}${normal}"
 
 	let nmpoint++
-	echo " $testname " >> ".NMlog.splog"
-	sed -i '1d' "$cekOut"
-	cat "$cekOut" >> ".NMlog.splog"
+	echo " $testname $partialScore" >> ".NMlog.splog"
+	printf " $checkerComment" >> ".NMlog.splog"
 	printf " \n " >> ".NMlog.splog"
+
 done
-if [ -e "$orgname.out" ]; then 
-	rm "$orgname.out"
-fi
-printf "\n"
+
 if [ $iopoint -eq $numtest ]; then
 	echo -e "\t ${yellow}\e[7mDid you forget the input/answer files ?\e[27m"
 fi
-printf "\t ${bold}$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps${plain}\n"
-echo "$point score which : " >> $log
 
-echo "$iopoint test lacks I/O " >> $log
+printf "\n \t ${bold}$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps${plain}\n"
+
+echo "$point" | bc | awk '{printf "%.4f", $0}' >> $log
+echo " score which : " >> $log
+
+echo -e "\n$iopoint test lacks I/O " >> $log
 cat ".IOlog.splog" >> "$log"
-echo "$repoint test RE " >> $log
+echo -e "\n$repoint test RE " >> $log
 cat ".RElog.splog" >> $log
-echo "$tlepoint test TLE " >> $log
+echo -e "\n$tlepoint test TLE " >> $log
 cat ".TLElog.splog" >> $log
-echo "$nmpoint test run normal with" >> $log
+echo -e "\n$nmpoint test run normal with" >> $log
 cat ".NMlog.splog" >> $log
 
 if [ $repoint -gt 0 ] ; then
@@ -178,6 +187,8 @@ if [ $repoint -gt 0 ] ; then
 	echo "RE info" >> $log
 	cat ".REinfo.splog" >> $log
 fi
+echo -e "\n" >> $log
+
 if [ $iopoint -gt 0 ] ; then
 	echo -e "\n" >> $log
 	echo "I/O info" >> $log

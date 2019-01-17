@@ -19,7 +19,7 @@ else
 	mkdir Result
 fi
 
-echo -e "${cyan}${bold}Welcome to Coo Judging ${normal}"
+echo -e "${cyan}${bold}Welcome to Coo Judge ${normal}"
 sleep 0.300
 foo=0
 while [ $foo -lt 1 ]; do
@@ -35,6 +35,7 @@ while [ $foo -lt 1 ]; do
 	totalTest=0
 	totalproblem=0
 	totalACproblem=0
+
 	printf "\t${red}${bold}Set All Time Limit to 1 ? [y/N] ${normal}"
 	superJudge=0
 	read checkContinuos
@@ -43,7 +44,9 @@ while [ $foo -lt 1 ]; do
             superJudge=1
         fi
 	printf "\n"
+
 	for f in Submit/*.cpp ; do
+
 		filename=$(basename -- $f)
 		name="${filename%.*}"
 		cname="${purple}"$name
@@ -68,31 +71,40 @@ while [ $foo -lt 1 ]; do
 		fi
 
 		if [ -e  "Test/$name" ] ; then
-			echo -e "\t ${green}${bold}OK!${normal}${plain} Start Judging $cname"
+			echo -e "\t ${green}${bold}Ready!${normal}${plain} Start Judging $cname"
+
 			flag_checker=0
 			if [ -e "Test/$name/checker" ] ; then
-				./judge_checker.sh ".tmp/$name" "Test/$name" $superJudge 2> /dev/null
+				./judge_checker.sh ".tmp/$name" "Test/$name" $superJudge #2> /dev/null
 				flag_checker=1
 			else 
-				./judge.sh ".tmp/$name" "Test/$name" $superJudge 2> /dev/null
+				./judge.sh ".tmp/$name" "Test/$name" $superJudge #2> /dev/null
 			fi
-			{
-				numAC="$(< .numAC.splog)"
-				numAll="$(< .numAll.splog)"
-				let totalScore=totalScore+numAC
-				let totalTest=totalTest+numAll
-				if [ $numAll -eq $numAC ] && [ $flag_checker -eq 0 ] ; then
-					let totalACproblem=totalACproblem+1
-				fi
-			} &> /dev/null
+						
+			numAC="$(< .numAC.splog)"
+			numAll="$(< .numAll.splog)"
+
+			totalScore=`echo $totalScore + $numAC | bc`
+
+			let totalTest=totalTest+numAll
+			if [ $flag_checker -eq 0 ] &&  [ "$numAll" -eq "$numAC" ] ; then
+				let totalACproblem=totalACproblem+1
+			fi
+			
 			find -path './.*.splog' -delete
 			echo -e "\t ${cyan}${bold}Done${normal} Judging $cname"	
+
 		else
+
 			echo -e "\t ${red}${bold}Error!${plain}${normal} Missing Test for Problem $cname"
 			echo -e "\t \e[38;5;202m${bold}Skip ${normal}Problem $cname"
+
 		fi
+
 		printf "\n"
+
 	done
+
 	if [ $totalACproblem = $totalproblem ] && [ $totalACproblem -gt 0 ] && [ $totalScore -gt 0 ] ; then
 		echo -e "\t     \e[48;5;27m\e[38;5;234m${bold}(っ◔◡◔)っ \e[38;5;196m♥ \e[38;5;121mꓚooPletꓱ \e[38;5;196m♥ ${normal}"
 			# spd-say -r -50 -p -55 -i -65 -t female2 "cupleted"
@@ -100,8 +112,13 @@ while [ $foo -lt 1 ]; do
 		:
 	#	spd-say -r -50 -p -55 -i -65 -t female2 -l UG ""
 	fi
-	echo -e "\t${cyan}\e[1m\e[4m$totalScore score\e[38;5;9m in \e[38;5;57m$totalTest Tests${normal}"
+
+	printf "\t ${cyan} \e[1m\e[4m"
+       	echo "$totalScore" |bc | awk '{printf "%.4f", $0}' 
+	printf " score \e[38;5;9m in \e[38;5;57m$totalTest Tests${normal} \n"
+
 	rm -r .tmp
+
 	printf "${blue}${bold}Continue Judging ? [y/N] ${normal}"
 	read response
 	if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]] ;
@@ -111,6 +128,8 @@ while [ $foo -lt 1 ]; do
 	    break ;
 	fi
 done
+
 mv *.log Result &> /dev/null
+
 echo -e "${blue}${bold}Press Any Key to Exit"
 read -rn1

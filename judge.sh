@@ -1,7 +1,5 @@
 #!/bin/bash
 
-ulimit -s 1000000
-
 bell=$(tput bel)
 
 bold=$(tput bold)
@@ -49,9 +47,14 @@ touch ".IOlog.splog"
 
 touch ".REinfo.splog"
 touch ".IOinfo.splog"
-# 
-for xtest in $testFile/*/;
+
+
+for xtest in `ls -dv $testFile/*`;
 do
+	if [ ! -d ${$xtest} ]; then
+		continue
+	fi
+
 	foo=$(($numtest % 10))
 	if [ $foo -lt 1 ] ; then
 		printf "\n \t"
@@ -102,7 +105,7 @@ do
 		continue
 	fi
 
-	if timeout --preserve-status --foreground $tlmit $exeFile < $inp > ".tmp.out"; then
+	if timeout --preserve-status --foreground $tlmit $exeFile < $inp > ".tmp.out" 2> /dev/null; then
 		:
 	else 
 		xcode=$?
@@ -143,15 +146,15 @@ fi
 printf "\t ${bold}$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps$ms$ps${plain}\n"
 echo "$point / $numtest which : " >> $log
 
-echo "$iopoint test lacks I/O " >> $log
+echo -e "\n$iopoint test lacks I/O " >> $log
 cat ".IOlog.splog" >> "$log"
-echo "$repoint test RE " >> $log
+echo -e "\n$repoint test RE " >> $log
 cat ".RElog.splog" >> $log
-echo "$tlepoint test TLE " >> $log
+echo -e "\n$tlepoint test TLE " >> $log
 cat ".TLElog.splog" >> $log
-echo "$wapoint test WA " >> $log
+echo -e "\n$wapoint test WA " >> $log
 cat ".WAlog.splog" >> $log
-echo "$point test AC " >> $log
+echo -e "\n$point test AC " >> $log
 cat ".AClog.splog" >> $log
 
 if [ $repoint -gt 0 ] ; then
