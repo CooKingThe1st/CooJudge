@@ -57,7 +57,7 @@ Trong đó, checker sẽ đọc từ testxx/ABC.[định dạng input], testxx/A
 
 checker.cpp có một file sample, các bạn đọc tham khảo.
 
-**Quan trBài làm của thí sinh vẫn dùng stdin stdout.
+**Quan trọng:** Bài làm của thí sinh vẫn dùng stdin stdout.
 
 #### Yêu cầu về checker
 
