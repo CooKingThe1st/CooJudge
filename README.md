@@ -55,7 +55,9 @@ Trong đó, checker sẽ đọc từ testxx/ABC.[định dạng input], testxx/A
     ABC.[định dạng output] là output của test case
     ABC.ore là output của thí sinh.  
 
-checker.cpp thì có một file sample, các bạn đọc tham khảo.
+checker.cpp có một file sample, các bạn đọc tham khảo.
+
+**Quan trBài làm của thí sinh vẫn dùng stdin stdout.
 
 #### Yêu cầu về checker
 
@@ -66,7 +68,7 @@ Ví dụ: Kết quả sai, Kết quả khác với Coo.King, Thí sinh gọi đ�
 
 #### Demo Screenshot for CustomJudge
 1. Thư mục nơi ta chấm bài [Main Folder](https://imgur.com/a/c2WvSSd)
-2. Thư mục nộp bài [Submit] (https://imgur.com/a/Ltz36Az) có chứa bài làm của user cho problem abc
+2. Thư mục nộp bài [Submit](https://imgur.com/a/Ltz36Az) có chứa bài làm của user cho problem abc
 3. Thư mục Test: [Test](https://imgur.com/a/UEMxQVk)  có chứa 1 folder test abc  
  trong abc: [Inside abc](https://imgur.com/a/Q5s5STa) có chứa 3 folder testxx và 1 file checker, 1 file checker.cpp (file.cpp không cần thiết).
 4. Chạy trình chấm [Run](https://imgur.com/a/g1BzXrO)  
